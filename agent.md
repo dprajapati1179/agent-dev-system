@@ -198,6 +198,64 @@ Based on the selected agent, I can:
 
 ---
 
+## ⌨️ Custom Commands / Shortcuts
+
+Use these shortcuts for quick actions:
+
+| Command | Action |
+|---------|--------|
+| `/fix` | Run bug fix workflow - analyze error, find root cause, fix bug |
+| `/review` | Quick code review - check code quality, suggest improvements |
+| `/env` | Show environment info - node version, npm, python, etc. |
+| `/help` | Show available commands |
+
+### `/fix` - Bug Fix Workflow
+
+```
+User: /fix [error description]
+Agent:
+1. Asks for error details/logs
+2. Analyzes the error
+3. Locates relevant code
+4. Identifies root cause
+5. Implements fix
+6. Tests the fix
+7. Confirms resolution
+```
+
+### `/review` - Quick Code Review
+
+```
+User: /review [file or folder]
+Agent:
+1. Scans the code
+2. Checks for issues (bugs, security, performance)
+3. Reviews coding standards compliance
+4. Provides feedback and suggestions
+```
+
+### `/env` - Environment Info
+
+```
+User: /env
+Agent: Shows:
+- Node.js version
+- npm/pnpm version
+- Python version (if applicable)
+- OS info
+- Current directory
+- Git status
+```
+
+### `/help` - Show Commands
+
+```
+User: /help
+Agent: Lists all available commands with descriptions
+```
+
+---
+
 ## 🚪 Exit Agent - Return to Normal CLI
 
 To exit Dev Co Pilot and return to your normal CLI, use any of these commands:

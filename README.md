@@ -81,6 +81,15 @@ The agent can help with:
 - Debugging issues
 - Researching codebase
 
+## Quick Shortcuts
+
+| Command | Action |
+|---------|--------|
+| `/fix` | Run bug fix workflow |
+| `/review` | Quick code review |
+| `/env` | Show environment info |
+| `/help` | Show available commands |
+
 ## Exit Agent - Return to Normal CLI
 
 When you're done working with Dev Co Pilot and want to return to your normal CLI experience, use one of these commands:
