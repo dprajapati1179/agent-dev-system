@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard - Universal Agent System</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <h1>Agent Dashboard</h1>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalProjects">0</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="activeAgents">0</span>
+                        <span class="stat-label">Active Agents</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="tasksCompleted">0</span>
+                        <span class="stat-label">Tasks Today</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateReport()">
+                        <i class="fas fa-chart-bar"></i> Report
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+            <!-- Overview Section -->
+            <section class="overview-section">
+                <div class="section-header">
+                    <h2>System Overview</h2>
+                    <div class="time-filter">
+                        <select id="timeRange" onchange="updateTimeRange()">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="all">All Time</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="overview-cards">
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Total Projects</h3>
+                            <p class="card-value" id="overviewProjects">0</p>
+                            <span class="card-change positive" id="projectChange">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Agent Sessions</h3>
+                            <p class="card-value" id="overviewSessions">0</p>
+                            <span class="card-change positive" id="sessionChange">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Tasks Completed</h3>
+                            <p class="card-value" id="overviewTasks">0</p>
+                            <span class="card-change positive" id="taskChange">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Compliance Rate</h3>
+                            <p class="card-value" id="overviewCompliance">0%</p>
+                            <span class="card-change positive" id="complianceChange">+0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Grid -->
+            <section class="projects-section">
+                <div class="section-header">
+                    <h2>Projects</h2>
+                    <div class="filter-controls">
+                        <input type="text" id="projectSearch" placeholder="Search projects..." onkeyup="filterProjects()">
+                        <select id="agentFilter" onchange="filterByAgent()">
+                            <option value="all">All Agents</option>
+                            <option value="developer">Developer</option>
+                            <option value="reviewer">Reviewer</option>
+                            <option value="tester">Tester</option>
+                            <option value="orchestrator">Orchestrator</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="projects-grid" id="projectsGrid">
+                    <!-- Project cards will be dynamically inserted here -->
+                </div>
+            </section>
+
+            <!-- Agent Analytics -->
+            <section class="analytics-section">
+                <div class="section-header">
+                    <h2>Agent Analytics</h2>
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" onclick="switchView('usage')">Usage</button>
+                        <button class="toggle-btn" onclick="switchView('performance')">Performance</button>
+                        <button class="toggle-btn" onclick="switchView('compliance')">Compliance</button>
+                    </div>
+                </div>
+                
+                <div class="analytics-content">
+                    <div class="chart-container">
+                        <canvas id="agentChart"></canvas>
+                    </div>
+                    <div class="agent-stats-list" id="agentStatsList">
+                        <!-- Agent statistics will be inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Task Tracking -->
+            <section class="tasks-section">
+                <div class="section-header">
+                    <h2>Task Tracking</h2>
+                    <div class="task-filters">
+                        <button class="filter-btn active" onclick="filterTasks('all')">All</button>
+                        <button class="filter-btn" onclick="filterTasks('in-progress')">In Progress</button>
+                        <button class="filter-btn" onclick="filterTasks('completed')">Completed</button>
+                        <button class="filter-btn" onclick="filterTasks('failed')">Failed</button>
+                    </div>
+                </div>
+                
+                <div class="tasks-container">
+                    <div class="tasks-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">In Progress:</span>
+                            <span class="summary-value" id="inProgressCount">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Completed Today:</span>
+                            <span class="summary-value" id="completedTodayCount">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Failed:</span>
+                            <span class="summary-value" id="failedCount">0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tasks-list" id="tasksList">
+                        <!-- Tasks will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Compliance Monitoring -->
+            <section class="compliance-section">
+                <div class="section-header">
+                    <h2>Compliance Monitoring</h2>
+                    <div class="compliance-status">
+                        <span class="status-indicator" id="complianceIndicator"></span>
+                        <span class="status-text" id="complianceStatusText">Checking...</span>
+                    </div>
+                </div>
+                
+                <div class="compliance-content">
+                    <div class="compliance-overview">
+                        <div class="compliance-score">
+                            <h3>Overall Compliance Score</h3>
+                            <div class="score-circle">
+                                <span id="complianceScore">0%</span>
+                            </div>
+                        </div>
+                        <div class="compliance-breakdown">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Projects Compliant:</span>
+                                <span class="breakdown-value" id="compliantProjects">0/0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Violations Today:</span>
+                                <span class="breakdown-value" id="violationsToday">0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Audit Score:</span>
+                                <span class="breakdown-value" id="auditScore">A+</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="compliance-alerts" id="complianceAlerts">
+                        <!-- Compliance alerts will be inserted here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Project Details -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalProjectName">Project Details</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Project details will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/real-time-integration.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
