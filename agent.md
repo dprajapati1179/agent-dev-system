@@ -196,6 +196,33 @@ Based on the selected agent, I can:
 - Oversee projects
 - Ensure quality
 
+---
+
+## 🚪 Exit Agent - Return to Normal CLI
+
+To exit Dev Co Pilot and return to your normal CLI, use any of these commands:
+
+### Exit Commands
+```
+"exit" / "quit" / "done" / "that's all" / "I'm done" / "stop"
+```
+
+### Exit Behavior
+
+When you use an exit command:
+1. Agent acknowledges and confirms exit
+2. Control returns to your normal CLI
+3. You can re-invoke anytime with: "Hey Dev Co Pilot, help me with..."
+
+### Exit Response Format
+
+```
+Agent: "Dev Co Pilot exiting. Call me anytime you need help!"
+[Control returns to your CLI]
+```
+
+---
+
 ## Project Detection Logic
 
 ```javascript

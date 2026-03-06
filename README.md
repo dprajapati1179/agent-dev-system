@@ -81,6 +81,34 @@ The agent can help with:
 - Debugging issues
 - Researching codebase
 
+## Exit Agent - Return to Normal CLI
+
+When you're done working with Dev Co Pilot and want to return to your normal CLI experience, use one of these commands:
+
+### Exit Commands
+
+```
+"exit" or "quit" or "done" or "that's all" or "I'm done"
+```
+
+### What Happens on Exit
+
+1. Agent stops and confirms exit
+2. Control returns to your normal CLI
+3. You can re-invoke the agent anytime with:
+   - "Hey Dev Co Pilot, help me with..."
+   - "Use the agent-dev-system to help me"
+
+### Exit Examples
+
+```
+You: "exit"
+Agent: "Dev Co Pilot exiting. Call me anytime you need help!"
+
+You: "quit"
+Agent: "Done. Returning you to your CLI. Say 'Hey Dev Co Pilot' when you need me."
+```
+
 ## Notes
 
 - This is a **helper agent**, not an autonomous system
