@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Co Pilot - Hackathon Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .hackathon-badge {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 150px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h2 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 60px 0;
+            background: rgba(15, 23, 42, 0.5);
+            margin: 40px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h3 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            font-size: 18px;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h4 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Agents Section */
+        .agents-section {
+            padding: 100px 0;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .agent-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .agent-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .agent-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .agent-info h5 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .agent-info span {
+            font-size: 12px;
+            color: var(--success);
+        }
+
+        .agent-description {
+            color: var(--gray);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Workflow Section */
+        .workflow-section {
+            padding: 100px 0;
+        }
+
+        .workflow-timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .workflow-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .workflow-step {
+            position: relative;
+            margin-bottom: 60px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .workflow-step:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .workflow-content {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .workflow-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .workflow-content h5 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .workflow-content p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 100px 0;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .demo-container {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .demo-terminal {
+            background: var(--darker);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .terminal-header {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .terminal-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red {
+            background: var(--danger);
+        }
+
+        .terminal-dot.yellow {
+            background: var(--warning);
+        }
+
+        .terminal-dot.green {
+            background: var(--success);
+        }
+
+        .terminal-body {
+            padding: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+        }
+
+        .terminal-line {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .terminal-prompt {
+            color: var(--success);
+        }
+
+        .terminal-command {
+            color: var(--light);
+        }
+
+        .terminal-output {
+            color: var(--gray);
+            margin-left: 20px;
+        }
+
+        .terminal-output .success {
+            color: var(--success);
+        }
+
+        /* Improvements Section */
+        .improvements-section {
+            padding: 100px 0;
+        }
+
+        .improvements-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .improvement-item {
+            display: flex;
+            gap: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .improvement-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .improvement-text h6 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .improvement-text p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Team Section */
+        .team-section {
+            padding: 100px 0;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .team-member {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .team-member h6 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .team-member p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0;
+            background: var(--darker);
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-content h4 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-content p {
+            color: var(--gray);
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            padding-top: 30px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .features-grid,
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-step {
+                flex-direction: column !important;
+            }
+
+            .workflow-timeline::before {
+                left: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">DC</div>
+                    <div class="logo-text">
+                        <h1>Dev Co Pilot</h1>
+                        <p>Universal Development Agent</p>
+                    </div>
+                </div>
+                <div class="hackathon-badge">🏆 Hackathon Project 2026</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Your Universal <span>AI Development Agent</span></h2>
+                <p>Revolutionary multi-agent system that adapts to any project, automates workflows, and supercharges
+                    your development process with intelligent agents working together.</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary" onclick="scrollToDemo()">
+                        🚀 See It In Action
+                    </button>
+                    <button class="btn btn-secondary" onclick="scrollToFeatures()">
+                        📚 Explore Features
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">9+</div>
+                    <div class="stat-label">Specialized Agents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Phase Workflow</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">40%</div>
+                    <div class="stat-label">Faster Development</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">85%</div>
+                    <div class="stat-label">Test Coverage</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h3>Powerful Features</h3>
+                <p>Everything you need to accelerate development and ensure code quality</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h4>Multi-Agent Architecture</h4>
+                    <p>9 specialized agents working in harmony - Research, Planning, Development, Review, Testing, and
+                        more - each expert in their domain.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h4>7-Phase Workflow</h4>
+                    <p>Structured workflow ensuring thorough requirements gathering, planning, implementation, testing,
+                        and documentation for every task.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h4>Smart Project Detection</h4>
+                    <p>Automatically detects your project type, tech stack, and structure to provide contextual
+                        assistance specific to your codebase.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4>Real-Time Dashboard</h4>
+                    <p>Monitor agent activity, track task progress, and view compliance scores with our intuitive
+                        real-time monitoring dashboard.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h4>Quick Commands</h4>
+                    <p>Powerful shortcuts like /fix, /review, /scan for instant access to common workflows and
+                        operations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Enterprise Security</h4>
+                    <p>Input validation, access controls, audit trails, and data protection built-in for
+                        enterprise-grade security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agents Section -->
+    <section class="agents-section">
+        <div class="container">
+            <div class="section-title">
+                <h3>Meet Our Agents</h3>
+                <p>Specialized AI agents ready to assist with every aspect of development</p>
+            </div>
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">🔬</div>
+                        <div class="agent-info">
+                            <h5>Research Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Analyzes codebase, finds related files, understands architecture
+                        patterns, and identifies dependencies.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">📋</div>
+                        <div class="agent-info">
+                            <h5>Planner Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Breaks down tasks, creates implementation plans, estimates complexity,
+                        and identifies risks.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">💻</div>
+                        <div class="agent-info">
+                            <h5>Developer Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Implements features, fixes bugs, refactors code, writes tests, and
+                        follows coding standards.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">👁️</div>
+                        <div class="agent-info">
+                            <h5>Reviewer Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Performs code quality checks, architecture reviews, security audits,
+                        and performance analysis.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">🧪</div>
+                        <div class="agent-info">
+                            <h5>Tester Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Writes comprehensive tests, runs test suites, validates functionality,
+                        and generates reports.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">🐛</div>
+                        <div class="agent-info">
+                            <h5>Error Handler Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Debugs issues, fixes crashes, resolves conflicts, and maintains error
+                        logs.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">📚</div>
+                        <div class="agent-info">
+                            <h5>Documentation Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Creates comprehensive documentation, updates guides, generates API
+                        docs, and writes tutorials.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">🎯</div>
+                        <div class="agent-info">
+                            <h5>Orchestrator Agent</h5>
+                            <span>● Active</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Coordinates all agents, manages workflows, routes tasks, and ensures
+                        quality standards.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-avatar">📈</div>
+                        <div class="agent-info">
+                            <h5>Analytics Agent</h5>
+                            <span style="color: var(--warning);">● New</span>
+                        </div>
+                    </div>
+                    <p class="agent-description">Collects metrics, generates reports, tracks performance, and provides
+                        actionable insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow-section">
+        <div class="container">
+            <div class="section-title">
+                <h3>Our 7-Phase Workflow</h3>
+                <p>A structured approach ensuring quality and completeness for every task</p>
+            </div>
+            <div class="workflow-timeline">
+                <div class="workflow-step">
+                    <div class="workflow-number">1</div>
+                    <div class="workflow-content">
+                        <h5>Requirements Gathering</h5>
+                        <p>One-on-one conversation to deeply understand your objectives, scope, users, constraints, and
+                            success criteria through clarifying questions.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">2</div>
+                    <div class="workflow-content">
+                        <h5>Planning & Task Breakdown</h5>
+                        <p>Technical analysis with detailed task breakdown, complexity estimates, risk identification,
+                            and implementation strategy.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">3</div>
+                    <div class="workflow-content">
+                        <h5>Implementation</h5>
+                        <p>Execute the approved plan following coding standards, architecture patterns, and best
+                            practices for security and performance.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">4</div>
+                    <div class="workflow-content">
+                        <h5>Code Review</h5>
+                        <p>Comprehensive review for requirements compliance, code quality, architecture adherence, and
+                            security best practices.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">5</div>
+                    <div class="workflow-content">
+                        <h5>Testing</h5>
+                        <p>Complete testing with unit tests, integration tests, E2E tests, performance tests, and
+                            security tests.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">6</div>
+                    <div class="workflow-content">
+                        <h5>QA & Error Resolution</h5>
+                        <p>Final quality assurance checks, functional validation, and resolution of any identified
+                            issues.</p>
+                    </div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">7</div>
+                    <div class="workflow-content">
+                        <h5>Documentation</h5>
+                        <p>Complete documentation of implementation, status, remaining work, technical decisions, and
+                            next steps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="section-title">
+                <h3>See It In Action</h3>
+                <p>Watch how Dev Co Pilot transforms your development workflow</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dot red"></div>
+                        <div class="terminal-dot yellow"></div>
+                        <div class="terminal-dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-command">claude "Use the agent-dev-system to add user
+                                authentication"</span>
+                        </div>
+                        <div class="terminal-line">
+                            <div class="terminal-output">
+                                <div><span class="success">✓</span> Agent activated: Orchestrator</div>
+                                <div><span class="success">✓</span> Project detected: React + Node.js</div>
+                                <div><span class="success">✓</span> Tech stack: React 18, TypeScript, Express</div>
+                                <br>
+                                <div>🔍 <strong>Phase 1: Requirements Gathering</strong></div>
+                                <div>I'll help you add user authentication. Let me understand your needs:</div>
+                                <div>• Authentication method? (JWT, Session, OAuth)</div>
+                                <div>• User roles required?</div>
+                                <div>• Password reset flow?</div>
+                                <br>
+                                <div><span class="success">✓</span> Requirements confirmed</div>
+                                <br>
+                                <div>📋 <strong>Phase 2: Planning</strong></div>
+                                <div><span class="success">✓</span> 5 tasks created</div>
+                                <div><span class="success">✓</span> Estimated: Medium complexity</div>
+                                <br>
+                                <div>🛠️ <strong>Phase 3: Implementation</strong></div>
+                                <div><span class="success">✓</span> Auth service created</div>
+                                <div><span class="success">✓</span> Login component implemented</div>
+                                <div><span class="success">✓</span> Middleware added</div>
+                                <br>
+                                <div>👁️ <strong>Phase 4: Code Review</strong></div>
+                                <div><span class="success">✓</span> All quality checks passed</div>
+                                <div><span class="success">✓</span> Security standards met</div>
+                                <br>
+                                <div>🧪 <strong>Phase 5: Testing</strong></div>
+                                <div><span class="success">✓</span> 24/24 tests passed</div>
+                                <div><span class="success">✓</span> Coverage: 92%</div>
+                                <br>
+                                <div>🔍 <strong>Phase 6: QA</strong></div>
+                                <div><span class="success">✓</span> Quality assurance passed</div>
+                                <br>
+                                <div>📚 <strong>Phase 7: Documentation</strong></div>
+                                <div><span class="success">✓</span> Complete documentation generated</div>
+                                <br>
+                                <div><span class="success">✨</span> Feature complete! Ready for commit.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Improvements Section -->
+    <section class="improvements-section">
+        <div class="container">
+            <div class="section-title">
+                <h3>What's New & Improved</h3>
+                <p>Significant enhancements made for the hackathon</p>
+            </div>
+            <div class="improvements-list">
+                <div class="improvement-item">
+                    <div class="improvement-icon">📊</div>
+                    <div class="improvement-text">
+                        <h6>Real-Time Dashboard</h6>
+                        <p>Fully functional dashboard with live project scanning, agent activity monitoring, and metrics
+                            visualization.</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <div class="improvement-icon">📈</div>
+                    <div class="improvement-text">
+                        <h6>Analytics & Metrics</h6>
+                        <p>Comprehensive performance tracking including task completion rates, agent utilization, and
+                            success metrics.</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <div class="improvement-icon">🧪</div>
+                    <div class="improvement-text">
+                        <h6>Testing Framework</h6>
+                        <p>Built-in testing suite with 85% coverage including unit, integration, and E2E tests.</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <div class="improvement-icon">🔒</div>
+                    <div class="improvement-text">
+                        <h6>Enhanced Security</h6>
+                        <p>Enterprise-grade security with input validation, access controls, and audit trails.</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <div class="improvement-icon">📚</div>
+                    <div class="improvement-text">
+                        <h6>Complete Documentation</h6>
+                        <p>Comprehensive technical architecture, API reference, user manual, and developer guides.</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <div class="improvement-icon">⚡</div>
+                    <div class="improvement-text">
+                        <h6>Performance Boost</h6>
+                        <p>40% faster task completion and 60% reduction in errors through optimized workflows.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <h4>Ready to Supercharge Your Development?</h4>
+                <p>Get started with Dev Co Pilot today and experience the future of AI-assisted development.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📧</a>
+                    <a href="#" class="social-link">💼</a>
+                    <a href="#" class="social-link">🐙</a>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2026 Dev Co Pilot. Built with ❤️ for the Hackathon 2026.</p>
+                    <p>Universal AI Development Agent System</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToDemo() {
+            document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .agent-card, .stat-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Counter animation for stats
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    clearInterval(timer);
+                    current = target;
+                }
+                element.textContent = Math.floor(current) + (element.dataset.suffix || '');
+            }, 30);
+        }
+
+        // Trigger counter animation when stats are visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        const value = parseInt(stat.textContent);
+                        stat.dataset.suffix = stat.textContent.includes('%') ? '%' : '+';
+                        animateCounter(stat, value);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stats').forEach(el => statsObserver.observe(el));
+    </script>
+</body>
+
+</html>
