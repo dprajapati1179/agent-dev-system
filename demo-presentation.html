@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Co Pilot - Hackathon Demo</title>
+    <title>Dev Co Pilot - Internal AI Development System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,280 +15,828 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --darker: #0f172a;
-            --light: #f8fafc;
-            --gray: #64748b;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            color: var(--light);
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(99, 102, 241, 0.3);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .logo-text h1 {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .logo-text p {
-            font-size: 12px;
-            color: var(--gray);
-        }
-
-        .hackathon-badge {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 150px 0 80px;
-            text-align: center;
+        /* ==================== SLIDE CONTAINER ==================== */
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
             position: relative;
             overflow: hidden;
         }
 
-        .hero::before {
+        .slides-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 70px;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+            z-index: 10;
+            filter: brightness(1.05);
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+            opacity: 0;
+        }
+
+        /* Scrollable content wrapper */
+        .slide-content-wrapper {
+            max-width: 100%;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(99, 102, 241, 0.5) rgba(31, 31, 58, 0.5);
+        }
+
+        .slide-content-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .slide-content-wrapper::-webkit-scrollbar-track {
+            background: rgba(31, 31, 58, 0.5);
+            border-radius: 3px;
+        }
+
+        .slide-content-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 3px;
+        }
+
+        .slide-content-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+
+        /* Vignette effect */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Content wrapper to stay above vignette */
+        .slide>* {
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide>.slide-bg {
+            z-index: 0;
+        }
+
+        /* ==================== NAVIGATION ==================== */
+        .nav-controls {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #818cf8;
+            font-size: 18px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(99, 102, 241, 0.4);
+            transform: scale(1.1);
+        }
+
+        .slide-indicator {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #a1a1aa;
+        }
+
+        .progress-dots {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #6366f1;
+            transform: scale(1.3);
+        }
+
+        .dot:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+
+        /* ==================== BACKGROUND ==================== */
+        .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0f0f1a 25%, #1a1a2e 50%, #13131f 75%, #0a0a0f 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            25% {
+                background-position: 100% 50%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            75% {
+                background-position: 0% 100%;
+            }
+        }
+
+        /* Animated mesh gradient overlay */
+        .slide-bg::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
-            animation: rotate 30s linear infinite;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.08) 0%, transparent 35%),
+                radial-gradient(circle at 60% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 35%);
+            animation: meshMove 25s ease-in-out infinite;
         }
 
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
+        @keyframes meshMove {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
             }
 
-            to {
-                transform: rotate(360deg);
+            25% {
+                transform: translate(2%, 2%) rotate(90deg) scale(1.05);
+            }
+
+            50% {
+                transform: translate(-1%, 3%) rotate(180deg) scale(0.98);
+            }
+
+            75% {
+                transform: translate(3%, -2%) rotate(270deg) scale(1.02);
             }
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 1;
+        /* Floating orbs */
+        .slide-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 25%);
+            animation: floatOrbs 15s ease-in-out infinite;
         }
 
-        .hero h2 {
-            font-size: 56px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            line-height: 1.2;
+        @keyframes floatOrbs {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.8;
+            }
+
+            25% {
+                transform: translateY(-20px) translateX(10px);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-10px) translateX(-15px);
+                opacity: 0.9;
+            }
+
+            75% {
+                transform: translateY(-30px) translateX(5px);
+                opacity: 1;
+            }
         }
 
-        .hero h2 span {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* Grid pattern overlay */
+        .slide-bg .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.6;
         }
 
-        .hero p {
-            font-size: 20px;
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto 40px;
+        /* Animated particles container */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
         }
 
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(99, 102, 241, 0.6);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
         }
 
-        .btn {
-            padding: 15px 35px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) translateX(10px) scale(1);
+            }
+
+            90% {
+                opacity: 1;
+                transform: translateY(10vh) translateX(-10px) scale(1);
+            }
+
+            100% {
+                transform: translateY(0) translateX(0) scale(0);
+                opacity: 0;
+            }
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
-        }
-
-        .btn-secondary {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(99, 102, 241, 0.2);
-        }
-
-        /* Stats Section */
-        .stats {
-            padding: 60px 0;
-            background: rgba(15, 23, 42, 0.5);
-            margin: 40px 0;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-        }
-
-        .stat-card {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 16px;
-            padding: 30px;
+        /* ==================== SLIDE 1: TITLE ==================== */
+        .title-slide {
             text-align: center;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
+        .main-title {
+            font-size: 70px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
         }
 
-        .stat-number {
-            font-size: 48px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .main-title .highlight {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.5));
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 50px rgba(99, 102, 241, 0.8));
+            }
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #a1a1aa;
+            margin-bottom: 50px;
+            font-weight: 400;
+        }
+
+        .presenter-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-item i {
+            font-size: 24px;
+            color: #6366f1;
             margin-bottom: 10px;
         }
 
-        .stat-label {
+        .info-item p {
             font-size: 14px;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #71717a;
+            font-weight: 500;
         }
 
-        /* Features Section */
-        .features {
-            padding: 100px 0;
+        /* ==================== SLIDE 2: AGENDA ==================== */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
         }
 
-        .section-title {
+        .agenda-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 22px;
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .agenda-item:hover {
+            transform: translateX(10px) translateY(-3px);
+            border-color: rgba(99, 102, 241, 0.6);
+            background: rgba(31, 31, 58, 0.9);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .agenda-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .agenda-text h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .agenda-text p {
+            font-size: 14px;
+            color: #71717a;
+        }
+
+        /* ==================== SLIDE 3: PROBLEM ==================== */
+        .problem-container {
+            max-width: 1000px;
             text-align: center;
-            margin-bottom: 60px;
         }
 
-        .section-title h3 {
-            font-size: 42px;
+        .problem-statements {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .problem-card {
+            padding: 40px 30px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .problem-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .problem-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ef4444;
+        }
+
+        .problem-card p {
+            font-size: 14px;
+            color: #a1a1aa;
+            line-height: 1.6;
+        }
+
+        /* ==================== SLIDE 4: SOLUTION ==================== */
+        .solution-big {
+            text-align: center;
+        }
+
+        .solution-title {
+            font-size: 60px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+        }
+
+        .solution-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 2px solid rgba(99, 102, 241, 0.4);
+            border-radius: 30px;
+            padding: 60px 80px;
+            max-width: 900px;
+        }
+
+        .solution-box h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .solution-box p {
+            font-size: 20px;
+            color: #a1a1aa;
+            line-height: 1.7;
+        }
+
+        /* ==================== SLIDE 5: WHAT IS IT ==================== */
+        .what-is-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .what-card {
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 30px 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .what-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .what-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 25px;
+        }
+
+        .what-card h3 {
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 15px;
         }
 
-        .section-title p {
-            font-size: 18px;
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto;
+        .what-card p {
+            font-size: 14px;
+            color: #a1a1aa;
+            line-height: 1.6;
         }
 
+        /* ==================== SLIDE 6-14: AGENTS ==================== */
+        .agent-spotlight {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .agent-visual {
+            text-align: center;
+        }
+
+        .agent-avatar-large {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin: 0 auto 30px;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+        }
+
+        .agent-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .agent-status-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        .agent-details h2 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .agent-details .tagline {
+            font-size: 20px;
+            color: #6366f1;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .agent-details .description {
+            font-size: 18px;
+            color: #a1a1aa;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .agent-capabilities {
+            list-style: none;
+        }
+
+        .agent-capabilities li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #d4d4d8;
+        }
+
+        .agent-capabilities li i {
+            color: #6366f1;
+            font-size: 20px;
+        }
+
+        /* ==================== SLIDE 15: ARCHITECTURE ==================== */
+        .architecture-diagram {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .arch-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .arch-node {
+            background: rgba(31, 31, 58, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 25px 35px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .arch-node.central {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border: none;
+            min-width: 200px;
+        }
+
+        .arch-node h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .arch-node p {
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+
+        .arch-node.central h4 {
+            font-size: 20px;
+            color: white;
+        }
+
+        .arch-node.central p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .arch-arrow {
+            font-size: 24px;
+            color: #6366f1;
+        }
+
+        /* ==================== SLIDE 16: WORKFLOW ==================== */
+        .workflow-diagram {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .workflow-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .workflow-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .workflow-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 40px;
+            font-size: 30px;
+            color: #6366f1;
+        }
+
+        .step-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 auto 20px;
+        }
+
+        .workflow-step h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .workflow-step p {
+            font-size: 12px;
+            color: #71717a;
+        }
+
+        /* ==================== SLIDE 17: FEATURES ==================== */
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
         }
 
         .feature-card {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 20px;
-            padding: 40px;
+            background: rgba(31, 31, 58, 0.6);
             border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 35px 30px;
             transition: all 0.3s ease;
         }
 
         .feature-card:hover {
             transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(31, 31, 58, 0.8);
         }
 
-        .feature-icon {
+        .feature-card.feature-icon {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #6366f1, #a855f7);
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -294,909 +845,1579 @@
             margin-bottom: 20px;
         }
 
-        .feature-card h4 {
-            font-size: 24px;
+        .feature-card h3 {
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .feature-card p {
-            color: var(--gray);
-            line-height: 1.7;
-        }
-
-        /* Agents Section */
-        .agents-section {
-            padding: 100px 0;
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        .agents-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .agent-card {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .agent-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .agent-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .agent-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .agent-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .agent-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .agent-info h5 {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .agent-info span {
-            font-size: 12px;
-            color: var(--success);
-        }
-
-        .agent-description {
-            color: var(--gray);
             font-size: 14px;
+            color: #a1a1aa;
             line-height: 1.6;
         }
 
-        /* Workflow Section */
-        .workflow-section {
-            padding: 100px 0;
+        /* ==================== SLIDE 18: TECH STACK ==================== */
+        .tech-showcase {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
         }
 
-        .workflow-timeline {
-            position: relative;
+        .tech-title {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 25px;
+        }
+
+        .tech-item {
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 30px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.1);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .tech-item i {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #6366f1;
+        }
+
+        .tech-item span {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ==================== SLIDE 19: BENEFITS ==================== */
+        .benefits-container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .benefits-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .benefit-item {
+            display: flex;
+            gap: 25px;
+            padding: 35px;
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            align-items: flex-start;
+        }
+
+        .benefit-number {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .benefit-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .benefit-content p {
+            font-size: 15px;
+            color: #a1a1aa;
+            line-height: 1.6;
+        }
+
+        /* ==================== SLIDE 20: DEMO ==================== */
+        .demo-slide {
+            text-align: center;
+        }
+
+        .demo-title {
+            font-size: 50px;
+            font-weight: 800;
+            margin-bottom: 30px;
+        }
+
+        .demo-box {
+            background: rgba(31, 31, 58, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 30px;
+            padding: 60px 80px;
             max-width: 900px;
             margin: 0 auto;
         }
 
-        .workflow-timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--primary), var(--secondary));
-            border-radius: 2px;
-        }
-
-        .workflow-step {
-            position: relative;
-            margin-bottom: 60px;
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-
-        .workflow-step:nth-child(odd) {
-            flex-direction: row-reverse;
-        }
-
-        .workflow-content {
-            flex: 1;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        .workflow-number {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 800;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 1;
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-        }
-
-        .workflow-content h5 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .workflow-content p {
-            color: var(--gray);
-            line-height: 1.7;
-        }
-
-        /* Demo Section */
-        .demo-section {
-            padding: 100px 0;
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        .demo-container {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 24px;
-            padding: 40px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
         .demo-terminal {
-            background: var(--darker);
+            background: #0a0a0f;
             border-radius: 16px;
             overflow: hidden;
-            margin: 30px 0;
+            margin-top: 20px;
+            text-align: left;
+            max-height: 420px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .demo-terminal .terminal-body {
+            overflow-y: auto;
+            flex: 1;
         }
 
         .terminal-header {
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(31, 31, 58, 0.8);
             padding: 15px 20px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .terminal-dot {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
         }
 
         .terminal-dot.red {
-            background: var(--danger);
+            background: #ef4444;
         }
 
         .terminal-dot.yellow {
-            background: var(--warning);
+            background: #f59e0b;
         }
 
         .terminal-dot.green {
-            background: var(--success);
+            background: #10b981;
         }
 
         .terminal-body {
-            padding: 30px;
+            padding: 20px;
             font-family: 'Courier New', monospace;
-            font-size: 15px;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         .terminal-line {
             margin-bottom: 10px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
         }
 
         .terminal-prompt {
-            color: var(--success);
+            color: #10b981;
         }
 
         .terminal-command {
-            color: var(--light);
+            color: #ffffff;
         }
 
         .terminal-output {
-            color: var(--gray);
+            color: #71717a;
             margin-left: 20px;
         }
 
         .terminal-output .success {
-            color: var(--success);
+            color: #10b981;
         }
 
-        /* Improvements Section */
-        .improvements-section {
-            padding: 100px 0;
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
         }
 
-        .improvements-list {
+        /* ==================== SLIDE 21: USE CASES ==================== */
+        .use-cases-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .improvement-item {
-            display: flex;
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            max-width: 1100px;
+            width: 100%;
         }
 
-        .improvement-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--success), #059669);
-            border-radius: 12px;
+        .use-case-card {
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .use-case-card .emoji {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .use-case-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .use-case-card p {
+            font-size: 14px;
+            color: #a1a1aa;
+            line-height: 1.6;
+        }
+
+        /* ==================== SLIDE 22: ROADMAP ==================== */
+        .roadmap-container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .roadmap-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .roadmap-timeline {
             display: flex;
+            gap: 30px;
+        }
+
+        .roadmap-phase {
+            flex: 1;
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            padding: 20px 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .roadmap-phase:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .roadmap-phase .phase-badge {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 50%;
             font-size: 24px;
-            flex-shrink: 0;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
         }
 
-        .improvement-text h6 {
-            font-size: 18px;
+        .roadmap-phase h4 {
+            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
-        .improvement-text p {
-            color: var(--gray);
-            font-size: 14px;
+        .roadmap-phase ul {
+            list-style: none;
+            text-align: left;
         }
 
-        /* Team Section */
-        .team-section {
-            padding: 100px 0;
-            background: rgba(15, 23, 42, 0.5);
+        .roadmap-phase li {
+            font-size: 12px;
+            color: #a1a1aa;
+            margin-bottom: 7px;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.4;
         }
 
-        .team-grid {
+        .roadmap-phase li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #6366f1;
+        }
+
+        /* ==================== SLIDE 23: COMPARISON ==================== */
+        .comparison-table {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .comparison-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .comparison-col {
+            background: rgba(31, 31, 58, 0.6);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .comparison-col:first-child {
+            border-radius: 20px 0 0 20px;
+        }
+
+        .comparison-col:last-child {
+            border-radius: 0 20px 20px 0;
+        }
+
+        .comparison-col.highlight {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            border: 2px solid rgba(99, 102, 241, 0.5);
+        }
+
+        .comparison-col h4 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .comparison-col ul {
+            list-style: none;
+        }
+
+        .comparison-col li {
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: #a1a1aa;
+        }
+
+        .comparison-col li i {
+            margin-right: 10px;
+        }
+
+        .comparison-col li i.fa-check {
+            color: #10b981;
+        }
+
+        .comparison-col li i.fa-times {
+            color: #ef4444;
+        }
+
+        /* ==================== SLIDE 24: SUMMARY ==================== */
+        .summary-slide {
+            text-align: center;
+        }
+
+        .summary-title {
+            font-size: 50px;
+            font-weight: 800;
+            margin-bottom: 40px;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 30px;
             max-width: 900px;
             margin: 0 auto;
         }
 
-        .team-member {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .team-member:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .member-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            margin: 0 auto 20px;
+        .summary-point {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 40px;
+            gap: 20px;
+            padding: 25px;
+            background: rgba(31, 31, 58, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            text-align: left;
         }
 
-        .team-member h6 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 5px;
+        .summary-point i {
+            font-size: 32px;
+            color: #6366f1;
         }
 
-        .team-member p {
-            color: var(--gray);
-            font-size: 14px;
+        .summary-point p {
+            font-size: 16px;
+            color: #d4d4d8;
         }
 
-        /* Footer */
-        footer {
-            padding: 60px 0;
-            background: var(--darker);
-            border-top: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        .footer-content {
+        /* ==================== SLIDE 25: THANK YOU ==================== */
+        .thank-you-slide {
             text-align: center;
         }
 
-        .footer-content h4 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .thank-you-title {
+            font-size: 80px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        .footer-content p {
-            color: var(--gray);
             margin-bottom: 30px;
-            font-size: 18px;
         }
 
-        .social-links {
+        .thank-you-subtitle {
+            font-size: 28px;
+            color: #a1a1aa;
+            margin-bottom: 50px;
+        }
+
+        .contact-info {
             display: flex;
-            gap: 20px;
+            gap: 40px;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-top: 50px;
         }
 
-        .social-link {
-            width: 50px;
-            height: 50px;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 12px;
+        .contact-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--primary);
+            gap: 15px;
+            padding: 20px 30px;
+            background: rgba(31, 31, 58, 0.6);
             border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            text-decoration: none;
             transition: all 0.3s ease;
+            cursor: pointer;
+            pointer-events: auto;
         }
 
-        .social-link:hover {
-            background: var(--primary);
-            color: white;
+        .contact-item:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
             transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
         }
 
-        .footer-bottom {
-            border-top: 1px solid rgba(99, 102, 241, 0.2);
-            padding-top: 30px;
-            color: var(--gray);
+        .contact-item i {
+            font-size: 24px;
+            color: #6366f1;
+        }
+
+        .contact-item span {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* ==================== SECTION TITLES ==================== */
+        .section-title {
             font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6366f1;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+            animation: titleShine 4s ease-in-out infinite;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h2 {
-                font-size: 36px;
+        @keyframes titleShine {
+
+            0%,
+            100% {
+                text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
             }
 
-            .hero p {
-                font-size: 16px;
+            50% {
+                text-shadow: 0 0 30px rgba(99, 102, 241, 0.8), 0 0 60px rgba(168, 85, 247, 0.4);
             }
+        }
 
-            .features-grid,
-            .agents-grid {
-                grid-template-columns: 1fr;
-            }
+        .slide-title {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 25px;
+        }
 
-            .workflow-step {
-                flex-direction: column !important;
-            }
+        .slide-subtitle {
+            font-size: 18px;
+            color: #a1a1aa;
+            max-width: 800px;
+            line-height: 1.5;
+        }
 
-            .workflow-timeline::before {
-                left: 30px;
-            }
+        /* ==================== KEYBOARD HINT ==================== */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #71717a;
+            z-index: 1000;
+        }
+
+        .keyboard-hint kbd {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">DC</div>
-                    <div class="logo-text">
-                        <h1>Dev Co Pilot</h1>
-                        <p>Universal Development Agent</p>
-                    </div>
-                </div>
-                <div class="hackathon-badge">🏆 Hackathon Project 2026</div>
-            </div>
-        </div>
-    </header>
+    <div class="presentation-container">
+        <div class="slides-wrapper">
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h2>Your Universal <span>AI Development Agent</span></h2>
-                <p>Revolutionary multi-agent system that adapts to any project, automates workflows, and supercharges
-                    your development process with intelligent agents working together.</p>
-                <div class="cta-buttons">
-                    <button class="btn btn-primary" onclick="scrollToDemo()">
-                        🚀 See It In Action
-                    </button>
-                    <button class="btn btn-secondary" onclick="scrollToFeatures()">
-                        📚 Explore Features
-                    </button>
+            <!-- SLIDE 1: TITLE -->
+            <div class="slide active">
+                <div class="slide-bg">
+                    <div class="grid-overlay"></div>
+                    <div class="particles-container" id="particles1"></div>
+                </div>
+                <div class="title-slide">
+                    <div class="section-title">Dev Co Pilot</div>
+                    <h1 class="main-title">
+                        Your Internal<br>
+                        <span class="highlight">AI Development Team</span>
+                    </h1>
+                    <p class="subtitle">Multi-Agent AI System Built for Our Company</p>
+                    <div class="presenter-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <p>March 2026</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-code"></i>
+                            <p>Hackathon Project</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">9+</div>
-                    <div class="stat-label">Specialized Agents</div>
+            <!-- SLIDE 2: AGENDA -->
+            <div class="slide">
+                <div class="slide-bg">
+                    <div class="grid-overlay"></div>
+                    <div class="particles-container"></div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">7</div>
-                    <div class="stat-label">Phase Workflow</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">40%</div>
-                    <div class="stat-label">Faster Development</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">85%</div>
-                    <div class="stat-label">Test Coverage</div>
+                <div class="section-title">Overview</div>
+                <h2 class="slide-title">Today's Agenda</h2>
+                <div class="agenda-grid">
+                    <div class="agenda-item">
+                        <div class="agenda-number">1</div>
+                        <div class="agenda-text">
+                            <h3>The Problem</h3>
+                            <p>Current development challenges</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">2</div>
+                        <div class="agenda-text">
+                            <h3>Our Solution</h3>
+                            <p>Dev Co Pilot introduction</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">3</div>
+                        <div class="agenda-text">
+                            <h3>Meet the Agents</h3>
+                            <p>9 specialized AI agents</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">4</div>
+                        <div class="agenda-text">
+                            <h3>How It Works</h3>
+                            <p>7-phase workflow & architecture</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">5</div>
+                        <div class="agenda-text">
+                            <h3>Features & Benefits</h3>
+                            <p>Key capabilities and advantages</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">6</div>
+                        <div class="agenda-text">
+                            <h3>Demo & Q&A</h3>
+                            <p>Live demonstration</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h3>Powerful Features</h3>
-                <p>Everything you need to accelerate development and ensure code quality</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h4>Multi-Agent Architecture</h4>
-                    <p>9 specialized agents working in harmony - Research, Planning, Development, Review, Testing, and
-                        more - each expert in their domain.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h4>7-Phase Workflow</h4>
-                    <p>Structured workflow ensuring thorough requirements gathering, planning, implementation, testing,
-                        and documentation for every task.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h4>Smart Project Detection</h4>
-                    <p>Automatically detects your project type, tech stack, and structure to provide contextual
-                        assistance specific to your codebase.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h4>Real-Time Dashboard</h4>
-                    <p>Monitor agent activity, track task progress, and view compliance scores with our intuitive
-                        real-time monitoring dashboard.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h4>Quick Commands</h4>
-                    <p>Powerful shortcuts like /fix, /review, /scan for instant access to common workflows and
-                        operations.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h4>Enterprise Security</h4>
-                    <p>Input validation, access controls, audit trails, and data protection built-in for
-                        enterprise-grade security.</p>
+            <!-- SLIDE 3: PROBLEM -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="problem-container">
+                    <div class="section-title">The Challenge</div>
+                    <h2 class="slide-title">Current Development Pain Points</h2>
+                    <div class="problem-statements">
+                        <div class="problem-card">
+                            <div class="problem-icon">⏰</div>
+                            <h3>Time Wasted</h3>
+                            <p>Developers spend 40% of time on repetitive tasks, code reviews, and debugging</p>
+                        </div>
+                        <div class="problem-card">
+                            <div class="problem-icon">🔀</div>
+                            <h3>Context Switching</h3>
+                            <p>Constant switching between planning, coding, testing, and documentation</p>
+                        </div>
+                        <div class="problem-card">
+                            <div class="problem-icon">📉</div>
+                            <h3>Inconsistent Quality</h3>
+                            <p>Varying code quality, missed edge cases, and incomplete documentation</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Agents Section -->
-    <section class="agents-section">
-        <div class="container">
-            <div class="section-title">
-                <h3>Meet Our Agents</h3>
-                <p>Specialized AI agents ready to assist with every aspect of development</p>
-            </div>
-            <div class="agents-grid">
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">🔬</div>
-                        <div class="agent-info">
-                            <h5>Research Agent</h5>
-                            <span>● Active</span>
-                        </div>
+            <!-- SLIDE 4: SOLUTION -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="solution-big">
+                    <div class="section-title">The Solution</div>
+                    <h1 class="solution-title">Dev Co Pilot</h1>
+                    <div class="solution-box">
+                        <h2>One System. Nine Agents. Infinite Possibilities.</h2>
+                        <p>A comprehensive multi-agent AI system that orchestrates specialized agents to handle every
+                            aspect of software development - from requirements to deployment.</p>
                     </div>
-                    <p class="agent-description">Analyzes codebase, finds related files, understands architecture
-                        patterns, and identifies dependencies.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">📋</div>
-                        <div class="agent-info">
-                            <h5>Planner Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Breaks down tasks, creates implementation plans, estimates complexity,
-                        and identifies risks.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">💻</div>
-                        <div class="agent-info">
-                            <h5>Developer Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Implements features, fixes bugs, refactors code, writes tests, and
-                        follows coding standards.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">👁️</div>
-                        <div class="agent-info">
-                            <h5>Reviewer Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Performs code quality checks, architecture reviews, security audits,
-                        and performance analysis.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">🧪</div>
-                        <div class="agent-info">
-                            <h5>Tester Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Writes comprehensive tests, runs test suites, validates functionality,
-                        and generates reports.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">🐛</div>
-                        <div class="agent-info">
-                            <h5>Error Handler Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Debugs issues, fixes crashes, resolves conflicts, and maintains error
-                        logs.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">📚</div>
-                        <div class="agent-info">
-                            <h5>Documentation Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Creates comprehensive documentation, updates guides, generates API
-                        docs, and writes tutorials.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">🎯</div>
-                        <div class="agent-info">
-                            <h5>Orchestrator Agent</h5>
-                            <span>● Active</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Coordinates all agents, manages workflows, routes tasks, and ensures
-                        quality standards.</p>
-                </div>
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-avatar">📈</div>
-                        <div class="agent-info">
-                            <h5>Analytics Agent</h5>
-                            <span style="color: var(--warning);">● New</span>
-                        </div>
-                    </div>
-                    <p class="agent-description">Collects metrics, generates reports, tracks performance, and provides
-                        actionable insights.</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Workflow Section -->
-    <section class="workflow-section">
-        <div class="container">
-            <div class="section-title">
-                <h3>Our 7-Phase Workflow</h3>
-                <p>A structured approach ensuring quality and completeness for every task</p>
-            </div>
-            <div class="workflow-timeline">
-                <div class="workflow-step">
-                    <div class="workflow-number">1</div>
-                    <div class="workflow-content">
-                        <h5>Requirements Gathering</h5>
-                        <p>One-on-one conversation to deeply understand your objectives, scope, users, constraints, and
-                            success criteria through clarifying questions.</p>
-                    </div>
+            <!-- SLIDE 5: WHAT IS IT -->
+            <div class="slide">
+                <div class="slide-bg">
+                    <div class="grid-overlay"></div>
+                    <div class="particles-container"></div>
                 </div>
-                <div class="workflow-step">
-                    <div class="workflow-number">2</div>
-                    <div class="workflow-content">
-                        <h5>Planning & Task Breakdown</h5>
-                        <p>Technical analysis with detailed task breakdown, complexity estimates, risk identification,
-                            and implementation strategy.</p>
+                <div class="section-title">Introduction</div>
+                <h2 class="slide-title" style="text-align: center;">What is Dev Co Pilot?</h2>
+                <div class="what-is-grid">
+                    <div class="what-card">
+                        <div class="what-icon">🤖</div>
+                        <h3>Multi-Agent AI</h3>
+                        <p>9 specialized agents working together autonomously</p>
                     </div>
-                </div>
-                <div class="workflow-step">
-                    <div class="workflow-number">3</div>
-                    <div class="workflow-content">
-                        <h5>Implementation</h5>
-                        <p>Execute the approved plan following coding standards, architecture patterns, and best
-                            practices for security and performance.</p>
+                    <div class="what-card">
+                        <div class="what-icon">🔄</div>
+                        <h3>7-Phase Workflow</h3>
+                        <p>Structured process from requirements to deployment</p>
                     </div>
-                </div>
-                <div class="workflow-step">
-                    <div class="workflow-number">4</div>
-                    <div class="workflow-content">
-                        <h5>Code Review</h5>
-                        <p>Comprehensive review for requirements compliance, code quality, architecture adherence, and
-                            security best practices.</p>
+                    <div class="what-card">
+                        <div class="what-icon">🎯</div>
+                        <h3>Project Agnostic</h3>
+                        <p>Works with any codebase, language, or framework</p>
                     </div>
-                </div>
-                <div class="workflow-step">
-                    <div class="workflow-number">5</div>
-                    <div class="workflow-content">
-                        <h5>Testing</h5>
-                        <p>Complete testing with unit tests, integration tests, E2E tests, performance tests, and
-                            security tests.</p>
+                    <div class="what-card">
+                        <div class="what-icon">⚡</div>
+                        <h3>Lightning Fast</h3>
+                        <p>40% faster development with AI assistance</p>
                     </div>
-                </div>
-                <div class="workflow-step">
-                    <div class="workflow-number">6</div>
-                    <div class="workflow-content">
-                        <h5>QA & Error Resolution</h5>
-                        <p>Final quality assurance checks, functional validation, and resolution of any identified
-                            issues.</p>
+                    <div class="what-card">
+                        <div class="what-icon">📊</div>
+                        <h3>Smart Dashboard</h3>
+                        <p>Real-time monitoring and analytics</p>
                     </div>
-                </div>
-                <div class="workflow-step">
-                    <div class="workflow-number">7</div>
-                    <div class="workflow-content">
-                        <h5>Documentation</h5>
-                        <p>Complete documentation of implementation, status, remaining work, technical decisions, and
-                            next steps.</p>
+                    <div class="what-card">
+                        <div class="what-icon">🔒</div>
+                        <h3>Enterprise Ready</h3>
+                        <p>Secure, scalable, and production-ready</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Demo Section -->
-    <section class="demo-section" id="demo">
-        <div class="container">
-            <div class="section-title">
-                <h3>See It In Action</h3>
-                <p>Watch how Dev Co Pilot transforms your development workflow</p>
-            </div>
-            <div class="demo-container">
-                <div class="demo-terminal">
-                    <div class="terminal-header">
-                        <div class="terminal-dot red"></div>
-                        <div class="terminal-dot yellow"></div>
-                        <div class="terminal-dot green"></div>
-                    </div>
-                    <div class="terminal-body">
-                        <div class="terminal-line">
-                            <span class="terminal-prompt">$</span>
-                            <span class="terminal-command">claude "Use the agent-dev-system to add user
-                                authentication"</span>
+            <!-- SLIDE 6: RESEARCH AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">🔬</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
                         </div>
-                        <div class="terminal-line">
-                            <div class="terminal-output">
-                                <div><span class="success">✓</span> Agent activated: Orchestrator</div>
-                                <div><span class="success">✓</span> Project detected: React + Node.js</div>
-                                <div><span class="success">✓</span> Tech stack: React 18, TypeScript, Express</div>
-                                <br>
-                                <div>🔍 <strong>Phase 1: Requirements Gathering</strong></div>
-                                <div>I'll help you add user authentication. Let me understand your needs:</div>
-                                <div>• Authentication method? (JWT, Session, OAuth)</div>
-                                <div>• User roles required?</div>
-                                <div>• Password reset flow?</div>
-                                <br>
-                                <div><span class="success">✓</span> Requirements confirmed</div>
-                                <br>
-                                <div>📋 <strong>Phase 2: Planning</strong></div>
-                                <div><span class="success">✓</span> 5 tasks created</div>
-                                <div><span class="success">✓</span> Estimated: Medium complexity</div>
-                                <br>
-                                <div>🛠️ <strong>Phase 3: Implementation</strong></div>
-                                <div><span class="success">✓</span> Auth service created</div>
-                                <div><span class="success">✓</span> Login component implemented</div>
-                                <div><span class="success">✓</span> Middleware added</div>
-                                <br>
-                                <div>👁️ <strong>Phase 4: Code Review</strong></div>
-                                <div><span class="success">✓</span> All quality checks passed</div>
-                                <div><span class="success">✓</span> Security standards met</div>
-                                <br>
-                                <div>🧪 <strong>Phase 5: Testing</strong></div>
-                                <div><span class="success">✓</span> 24/24 tests passed</div>
-                                <div><span class="success">✓</span> Coverage: 92%</div>
-                                <br>
-                                <div>🔍 <strong>Phase 6: QA</strong></div>
-                                <div><span class="success">✓</span> Quality assurance passed</div>
-                                <br>
-                                <div>📚 <strong>Phase 7: Documentation</strong></div>
-                                <div><span class="success">✓</span> Complete documentation generated</div>
-                                <br>
-                                <div><span class="success">✨</span> Feature complete! Ready for commit.</div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Research Agent</h2>
+                        <p class="tagline">Your Codebase Intelligence Expert</p>
+                        <p class="description">Analyzes your entire codebase to understand architecture, find related
+                            files, identify patterns, and map dependencies before any work begins.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Scans project structure and dependencies</li>
+                            <li><i class="fas fa-check-circle"></i> Finds related files and components</li>
+                            <li><i class="fas fa-check-circle"></i> Understands architecture patterns</li>
+                            <li><i class="fas fa-check-circle"></i> Maps import/export relationships</li>
+                            <li><i class="fas fa-check-circle"></i> Identifies potential conflicts</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: PLANNER AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">📋</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Planner Agent</h2>
+                        <p class="tagline">Strategic Task Breakdown Expert</p>
+                        <p class="description">Transforms complex requirements into actionable implementation plans with
+                            accurate complexity estimates and risk assessment.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Breaks down features into tasks</li>
+                            <li><i class="fas fa-check-circle"></i> Orders tasks by dependencies</li>
+                            <li><i class="fas fa-check-circle"></i> Estimates complexity & time</li>
+                            <li><i class="fas fa-check-circle"></i> Identifies potential risks</li>
+                            <li><i class="fas fa-check-circle"></i> Creates rollback strategies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: DEVELOPER AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">💻</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Developer Agent</h2>
+                        <p class="tagline">Implementation Expert</p>
+                        <p class="description">Writes clean, production-ready code following all coding standards, best
+                            practices, and architectural patterns.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Implements features & fixes bugs</li>
+                            <li><i class="fas fa-check-circle"></i> Follows coding standards</li>
+                            <li><i class="fas fa-check-circle"></i> Writes unit tests</li>
+                            <li><i class="fas fa-check-circle"></i> Refactors legacy code</li>
+                            <li><i class="fas fa-check-circle"></i> Ensures type safety</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: REVIEWER AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">👁️</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Reviewer Agent</h2>
+                        <p class="tagline">Code Quality Guardian</p>
+                        <p class="description">Performs comprehensive code reviews checking for quality, security,
+                            performance, and architectural compliance.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Code quality analysis</li>
+                            <li><i class="fas fa-check-circle"></i> Security vulnerability detection</li>
+                            <li><i class="fas fa-check-circle"></i> Performance optimization</li>
+                            <li><i class="fas fa-check-circle"></i> Architecture compliance check</li>
+                            <li><i class="fas fa-check-circle"></i> Best practices validation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 10: TESTER AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">🧪</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Tester Agent</h2>
+                        <p class="tagline">Quality Assurance Expert</p>
+                        <p class="description">Validates code changes work correctly through comprehensive testing.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Write tests</li>
+                            <li><i class="fas fa-check-circle"></i> Run test suites</li>
+                            <li><i class="fas fa-check-circle"></i> Validate functionality</li>
+                            <li><i class="fas fa-check-circle"></i> Performance testing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: ERROR HANDLER -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">🐛</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Error Handler Agent</h2>
+                        <p class="tagline">Debugging & Crisis Expert</p>
+                        <p class="description">Diagnoses and resolves errors and crashes with systematic
+                            debugging approaches.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Analyzes error logs & stack traces</li>
+                            <li><i class="fas fa-check-circle"></i> Identifies root causes</li>
+                            <li><i class="fas fa-check-circle"></i> Fixes crashes & bugs</li>
+                            <li><i class="fas fa-check-circle"></i> Maintains error history</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 12: DOCUMENTATION AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">📚</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Documentation Agent</h2>
+                        <p class="tagline">Knowledge Management Expert</p>
+                        <p class="description">Update and maintain documentation for the ContentGen platform.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Write/update README</li>
+                            <li><i class="fas fa-check-circle"></i> Create API docs</li>
+                            <li><i class="fas fa-check-circle"></i> Generate code comments</li>
+                            <li><i class="fas fa-check-circle"></i> Update guides</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 13: ORCHESTRATOR AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">🎯</div>
+                        <div class="agent-status-badge">
+                            <span class="agent-status-dot"></span>
+                            Active & Ready
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Orchestrator Agent</h2>
+                        <p class="tagline">Project Management Expert</p>
+                        <p class="description">Coordinates multiple agents, manages complex tasks, oversees projects, and ensures quality standards are met.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Coordinate multiple agents</li>
+                            <li><i class="fas fa-check-circle"></i> Manage complex tasks</li>
+                            <li><i class="fas fa-check-circle"></i> Oversee projects</li>
+                            <li><i class="fas fa-check-circle"></i> Ensure quality</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 14: ANALYTICS AGENT -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="agent-spotlight">
+                    <div class="agent-visual">
+                        <div class="agent-avatar-large">📈</div>
+                        <div class="agent-status-badge"
+                            style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #f59e0b;">
+                            <span class="agent-status-dot" style="background: #f59e0b;"></span>
+                            Beta
+                        </div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="section-title">Agent Spotlight</div>
+                        <h2>Analytics Agent</h2>
+                        <p class="tagline">Insights & Optimization Expert</p>
+                        <p class="description">Collects metrics, generates reports, tracks performance, and provides
+                            actionable insights for continuous improvement.</p>
+                        <ul class="agent-capabilities">
+                            <li><i class="fas fa-check-circle"></i> Tracks development metrics</li>
+                            <li><i class="fas fa-check-circle"></i> Generates performance reports</li>
+                            <li><i class="fas fa-check-circle"></i> Identifies bottlenecks</li>
+                            <li><i class="fas fa-check-circle"></i> Suggests optimizations</li>
+                            <li><i class="fas fa-check-circle"></i> Creates dashboards</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 15: ARCHITECTURE -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="architecture-diagram">
+                    <div class="section-title">System Design</div>
+                    <h2 class="arch-title">Multi-Agent Architecture</h2>
+                    <div class="arch-flow">
+                        <div class="arch-node">
+                            <h4>👤 User</h4>
+                            <p>Request Input</p>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node central">
+                            <h4>🎯 Orchestrator</h4>
+                            <p>Central Coordination</p>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node">
+                            <h4>🤖 Specialized Agents</h4>
+                            <p>9 Expert Agents</p>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node">
+                            <h4>✅ Output</h4>
+                            <p>Code & Docs</p>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 40px; color: #71717a; font-size: 16px;">
+                        Each agent operates independently while communicating through the Orchestrator
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 16: WORKFLOW -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="workflow-diagram">
+                    <div class="section-title">Process</div>
+                    <h2 class="workflow-title">7-Phase Workflow</h2>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-circle">1</div>
+                            <h4>Requirements</h4>
+                            <p>Gather & Clarify</p>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-circle">2</div>
+                            <h4>Planning & Docs</h4>
+                            <p>Tasks & Setup</p>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-circle">3</div>
+                            <h4>Implement</h4>
+                            <p>Real-time Tracking</p>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-circle">4</div>
+                            <h4>Review</h4>
+                            <p>Quality Check</p>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-circle">5</div>
+                            <h4>Test</h4>
+                            <p>Configurable*</p>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-circle">6</div>
+                            <h4>QA</h4>
+                            <p>Final Check</p>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-circle">7</div>
+                            <h4>Document</h4>
+                            <p>Record All</p>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; color: #71717a; font-size: 14px;">
+                        * Phase 5 can be configured as required/optional/disabled per workflow
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 17: FEATURES -->
+            <div class="slide">
+                <div class="slide-bg">
+                    <div class="grid-overlay"></div>
+                    <div class="particles-container"></div>
+                </div>
+                <div class="section-title">Capabilities</div>
+                <h2 class="slide-title" style="text-align: center;">Powerful Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Smart Detection</h3>
+                        <p>Automatically detects project type, tech stack, and structure</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Quick Commands</h3>
+                        <p>Powerful shortcuts like /fix, /review, /scan for instant actions</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Real-Time Dashboard</h3>
+                        <p>Monitor activity, track progress, and view compliance scores</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Enterprise Security</h3>
+                        <p>Input validation, access controls, and audit trails built-in</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Auto-Workflow</h3>
+                        <p>Automatic progression through all 7 phases without manual intervention</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>Context Awareness</h3>
+                        <p>Understands your entire codebase for contextual assistance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 18: BENEFITS -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="benefits-container">
+                    <div class="section-title">Why Choose Us</div>
+                    <h2 class="benefits-title">Key Benefits</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-number">40%</div>
+                            <div class="benefit-content">
+                                <h3>Faster Delivery</h3>
+                                <p>Accelerate development with AI-powered automation and intelligent assistance</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-number">99%</div>
+                            <div class="benefit-content">
+                                <h3>Code Quality</h3>
+                                <p>Consistent high-quality code with automated reviews and testing</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-number">9x</div>
+                            <div class="benefit-content">
+                                <h3>Productivity Boost</h3>
+                                <p>Nine specialized agents working simultaneously on different aspects</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-number">24/7</div>
+                            <div class="benefit-content">
+                                <h3>Always Available</h3>
+                                <p>Round-the-clock assistance for development tasks and queries</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Improvements Section -->
-    <section class="improvements-section">
-        <div class="container">
-            <div class="section-title">
-                <h3>What's New & Improved</h3>
-                <p>Significant enhancements made for the hackathon</p>
-            </div>
-            <div class="improvements-list">
-                <div class="improvement-item">
-                    <div class="improvement-icon">📊</div>
-                    <div class="improvement-text">
-                        <h6>Real-Time Dashboard</h6>
-                        <p>Fully functional dashboard with live project scanning, agent activity monitoring, and metrics
-                            visualization.</p>
-                    </div>
+            <!-- SLIDE 19: DEMO -->
+            <div class="slide">
+                <div class="slide-bg">
+                    <div class="grid-overlay"></div>
+                    <div class="particles-container"></div>
                 </div>
-                <div class="improvement-item">
-                    <div class="improvement-icon">📈</div>
-                    <div class="improvement-text">
-                        <h6>Analytics & Metrics</h6>
-                        <p>Comprehensive performance tracking including task completion rates, agent utilization, and
-                            success metrics.</p>
-                    </div>
-                </div>
-                <div class="improvement-item">
-                    <div class="improvement-icon">🧪</div>
-                    <div class="improvement-text">
-                        <h6>Testing Framework</h6>
-                        <p>Built-in testing suite with 85% coverage including unit, integration, and E2E tests.</p>
-                    </div>
-                </div>
-                <div class="improvement-item">
-                    <div class="improvement-icon">🔒</div>
-                    <div class="improvement-text">
-                        <h6>Enhanced Security</h6>
-                        <p>Enterprise-grade security with input validation, access controls, and audit trails.</p>
-                    </div>
-                </div>
-                <div class="improvement-item">
-                    <div class="improvement-icon">📚</div>
-                    <div class="improvement-text">
-                        <h6>Complete Documentation</h6>
-                        <p>Comprehensive technical architecture, API reference, user manual, and developer guides.</p>
-                    </div>
-                </div>
-                <div class="improvement-item">
-                    <div class="improvement-icon">⚡</div>
-                    <div class="improvement-text">
-                        <h6>Performance Boost</h6>
-                        <p>40% faster task completion and 60% reduction in errors through optimized workflows.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                <div class="demo-slide">
+                    <div class="section-title">Live Demo</div>
+                    <h2 class="demo-title">See Dev Co Pilot In Action</h2>
+                    <div class="demo-box">
+                        <p style="font-size: 18px; color: #a1a1aa; margin-bottom: 20px;">Real 7-phase workflow
+                            processing: "Add user authentication to dashboard"</p>
+                        <div class="demo-terminal">
+                            <div class="terminal-header">
+                                <div class="terminal-dot red"></div>
+                                <div class="terminal-dot yellow"></div>
+                                <div class="terminal-dot green"></div>
+                                <span style="margin-left: 10px; font-size: 13px; color: #71717a;">Dev Co Pilot
+                                    v1.0</span>
+                            </div>
+                            <div class="terminal-body" style="font-size: 13px;">
+                                <div class="terminal-line">
+                                    <span class="terminal-prompt">$</span>
+                                    <span class="terminal-command">Hey dev co pilot, add user authentication to the
+                                        dashboard</span>
+                                </div>
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 1:
+                                        Requirements Gathering</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    <span style="color: #6366f1;">→</span> Objective: Add JWT-based authentication to
+                                    dashboard routes
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    <span style="color: #6366f1;">→</span> Scope: Login page, auth middleware, protected
+                                    routes
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    <span style="color: #6366f1;">→</span> Success Criteria: User can login/logout,
+                                    protected routes require auth
+                                </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <h4>Ready to Supercharge Your Development?</h4>
-                <p>Get started with Dev Co Pilot today and experience the future of AI-assisted development.</p>
-                <div class="social-links">
-                    <a href="#" class="social-link">📧</a>
-                    <a href="#" class="social-link">💼</a>
-                    <a href="#" class="social-link">🐙</a>
-                </div>
-                <div class="footer-bottom">
-                    <p>© 2026 Dev Co Pilot. Built with ❤️ for the Hackathon 2026.</p>
-                    <p>Universal AI Development Agent System</p>
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 2:
+                                        Planning & Task Breakdown</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🔬 Research: Found 8 related files (auth.ts, middleware/, dashboard/)
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📋 Tasks: 5 tasks created, estimated complexity: Medium
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📚 Documentation: docs/project-plan-auth.md created
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📚 Documentation: docs/tasks-breakdown-auth.md created
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📊 Task Tracking: memory/active_tasks.md initialized
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📊 Task Tracking: memory/task_progress.md initialized
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🔄 Status System: PLANNED → IN_PROGRESS → COMPLETED
+                                </div>
+
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 3:
+                                        Implementation</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📊 Real-time Status: Task 1 (2m 15s) ✅ COMPLETED
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📊 Real-time Status: Task 2 (1m 45s) ✅ COMPLETED
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📊 Real-time Status: Task 3 (1m 32s) ✅ COMPLETED
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🔄 Real-time Status: Task 4 (45%) IN_PROGRESS
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📊 Progress: 3/5 tasks (60%) | Time: 5m 32s | ETA: 9m 15s
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    💻 Created: auth/login.ts, auth/middleware.ts, auth/types.ts
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    💻 Modified: dashboard/page.tsx, lib/api.ts
+                                </div>
+
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 4: Code
+                                        Review</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    👁️ Status: <span style="color: #10b981;">APPROVED</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    👁️ TypeScript: Strict compliance ✓
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    👁️ Security: No vulnerabilities detected ✓
+                                </div>
+
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 5:
+                                        Testing</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🧪 Unit Tests: 12/12 <span style="color: #10b981;">PASSED</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🧪 Integration: 5/5 <span style="color: #10b981;">PASSED</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🧪 Coverage: 94%
+                                </div>
+
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 6: QA &
+                                        Error Resolution</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    🐛 Issues: 0 critical, 0 warnings
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    ✅ <span style="color: #10b981;">QA Status: PASSED</span>
+                                </div>
+
+                                <div class="terminal-line terminal-output">
+                                    <span style="color: #10b981;">✓</span> <span style="color: #a1a1aa;">Phase 7:
+                                        Documentation</span>
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📚 Updated: README.md, API.md, CHANGELOG.md
+                                </div>
+                                <div class="terminal-line terminal-output" style="margin-left: 20px;">
+                                    📚 Generated: auth/README.md
+                                </div>
+
+                                <div class="terminal-line terminal-output"
+                                    style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(99, 102, 241, 0.2);">
+                                    <span style="color: #10b981;">✅</span> <span
+                                        style="color: #ffffff; font-weight: 600;">WORKFLOW COMPLETE</span>
+                                    <span style="color: #a1a1aa; margin-left: 20px;">Files: 5 created, 2 modified</span>
+                                    <span style="color: #a1a1aa; margin-left: 20px;">Time: 8m 32s</span>
+                                </div>
+                                <div class="terminal-line">
+                                    <span class="terminal-prompt">$</span>
+                                    <span class="terminal-cursor" style="animation: blink 1s infinite;">▋</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- SLIDE 20: ROADMAP -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="roadmap-container">
+                    <div class="section-title">What's Next</div>
+                    <h2 class="roadmap-title">Future Improvements</h2>
+                    <p
+                        style="text-align: center; font-size: 18px; color: #a1a1aa; margin-bottom: 50px; max-width: 800px;">
+                        Making Dev Co Pilot even more powerful for our teams
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 900px;">
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">📊</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Analytics Dashboard</h3>
+                            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">Track performance metrics and
+                                team productivity</p>
+                        </div>
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">🔗</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Git & CI/CD Integration
+                            </h3>
+                            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">Connect with existing tools
+                                and pipelines</p>
+                        </div>
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">⚡</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Custom Workflows</h3>
+                            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">Create personalized agent
+                                pipelines</p>
+                        </div>
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">🌐</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">More Languages</h3>
+                            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">Support for additional
+                                programming languages</p>
+                        </div>
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">🔒</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Advanced Security</h3>
+                            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.5;">Enterprise-grade security and
+                                compliance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 21: COMPARISON -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="comparison-table">
+                    <div class="section-title">Market Analysis</div>
+                    <h2 class="comparison-title">Why We're Different</h2>
+                    <div class="comparison-grid">
+                        <div class="comparison-col">
+                            <h4>Traditional Tools</h4>
+                            <ul>
+                                <li><i class="fas fa-times"></i> Single-purpose agents</li>
+                                <li><i class="fas fa-times"></i> Manual coordination</li>
+                                <li><i class="fas fa-times"></i> Fragmented workflow</li>
+                                <li><i class="fas fa-times"></i> Limited context</li>
+                                <li><i class="fas fa-times"></i> No documentation</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-col highlight">
+                            <h4>Dev Co Pilot</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> 9 specialized agents</li>
+                                <li><i class="fas fa-check"></i> Auto-orchestration</li>
+                                <li><i class="fas fa-check"></i> Complete 7-phase workflow</li>
+                                <li><i class="fas fa-check"></i> Full codebase awareness</li>
+                                <li><i class="fas fa-check"></i> Auto-documentation</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-col">
+                            <h4>Hiring More Devs</h4>
+                            <ul>
+                                <li><i class="fas fa-times"></i> Expensive ($100k+ each)</li>
+                                <li><i class="fas fa-times"></i> Slow hiring process</li>
+                                <li><i class="fas fa-times"></i> Training overhead</li>
+                                <li><i class="fas fa-times"></i> Human limitations</li>
+                                <li><i class="fas fa-times"></i> Turnover risk</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 22: SUMMARY -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="summary-slide">
+                    <div class="section-title">Recap</div>
+                    <h2 class="summary-title">Key Takeaways</h2>
+                    <div class="summary-points">
+                        <div class="summary-point">
+                            <i class="fas fa-robot"></i>
+                            <p>9 specialized AI agents working together autonomously</p>
+                        </div>
+                        <div class="summary-point">
+                            <i class="fas fa-sync-alt"></i>
+                            <p>Complete 7-phase workflow from requirements to documentation</p>
+                        </div>
+                        <div class="summary-point">
+                            <i class="fas fa-rocket"></i>
+                            <p>40% faster development with consistent high quality</p>
+                        </div>
+                        <div class="summary-point">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                            <p>Works with any project, language, or framework</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 23: THANK YOU -->
+            <div class="slide">
+                <div class="slide-bg"></div>
+                <div class="thank-you-slide">
+                    <h1 class="thank-you-title">Thank You!</h1>
+                    <p class="thank-you-subtitle">Questions? Let's Discuss!</p>
+                    <div class="contact-info">
+                        <a href="https://github.com/dprajapati1179/agent-dev-system" target="_blank"
+                            class="contact-item">
+                            <i class="fab fa-github"></i>
+                            <span>github.com/dprajapati1179/agent-dev-system</span>
+                        </a>
+                        <a href="mailto:dprajapati1179@gmail.com" class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>dprajapati1179@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </footer>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()" title="Previous Slide (←)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="slide-indicator">
+            <span id="currentSlide">1</span> / <span id="totalSlides">24</span>
+        </div>
+        <button class="nav-btn" onclick="nextSlide()" title="Next Slide (→ or Space)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Progress Dots -->
+    <div class="progress-dots" id="progressDots"></div>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">
+        <kbd>←</kbd> <kbd>→</kbd> or <kbd>Space</kbd> to navigate • <kbd>F</kbd> for fullscreen
+    </div>
 
     <script>
-        function scrollToDemo() {
-            document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Update total slides display
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        // Create progress dots
+        const dotsContainer = document.getElementById('progressDots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
         }
 
-        function scrollToFeatures() {
-            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Add scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else if (index < currentSlide) {
+                    slide.classList.add('prev');
                 }
             });
-        }, observerOptions);
 
-        document.querySelectorAll('.feature-card, .agent-card, .stat-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'all 0.6s ease';
-            observer.observe(el);
+            // Update indicator
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            // Update dots
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    prevSlide();
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+                case 'Home':
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
         });
 
-        // Counter animation for stats
-        function animateCounter(element, target) {
-            let current = 0;
-            const increment = target / 50;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    clearInterval(timer);
-                    current = target;
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
                 }
-                element.textContent = Math.floor(current) + (element.dataset.suffix || '');
-            }, 30);
+            }
         }
 
-        // Trigger counter animation when stats are visible
-        const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const statNumbers = entry.target.querySelectorAll('.stat-number');
-                    statNumbers.forEach(stat => {
-                        const value = parseInt(stat.textContent);
-                        stat.dataset.suffix = stat.textContent.includes('%') ? '%' : '+';
-                        animateCounter(stat, value);
-                    });
-                    statsObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
 
-        document.querySelectorAll('.stats').forEach(el => statsObserver.observe(el));
+        // Initialize
+        updateSlide();
+
+        // Create floating particles for each slide
+        document.querySelectorAll('.particles-container').forEach((container, index) => {
+            const particleCount = 15;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                particle.style.animationDelay = (Math.random() * 10) + 's';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                container.appendChild(particle);
+            }
+        });
     </script>
 </body>
 
