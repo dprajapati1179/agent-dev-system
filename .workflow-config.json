@@ -1,0 +1,23 @@
+{
+  "testing": {
+    "mode": "optional",
+    "auto_ask": true,
+    "default_types": ["unit", "integration"],
+    "skip_confirmation": false,
+    "critical_projects_override": false
+  },
+  "workflow": {
+    "phases": {
+      "testing": {
+        "enabled": true,
+        "required": false,
+        "configurable": true
+      }
+    }
+  },
+  "prompts": {
+    "testing_choice": true,
+    "safety_warnings": true,
+    "recommendations": true
+  }
+}
